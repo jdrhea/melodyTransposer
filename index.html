@@ -24,7 +24,7 @@
         <p id="output">Text Will Appear Here</p>
     </div>
 <script>
-    const keys = ["C", "C#","D", "Eb","E", "F", "F#", "G", "G#", "A", "Bb", "B"];
+    const keys = ["C", "C#","D", "E♭","E", "F", "F#", "G", "G#", "A", "B♭", "B"];
 
     function getKey(key, keyToTranspose, melody)
     {
@@ -42,13 +42,13 @@
             
                 keyTransposeidx = i;
             }
-            let raw_half_steps = keyTransposeidx - currentKeyidx;
-            let half_steps = (keys.length + raw_half_steps) % keys.length
-            for(let j = 0; j < melody.length; j++)
-            {
-                newMelody.push(Transpose(melody[j], half_steps));
+        }
+        let raw_half_steps = keyTransposeidx - currentKeyidx;
+        let half_steps = (keys.length + raw_half_steps) % keys.length
+        for(let j = 0; j < melody.length; j++)
+        {
+            newMelody.push(Transpose(melody[j], half_steps));
             
-            }
         }
         return newMelody;
     }
@@ -73,6 +73,7 @@
         let key = document.getElementById("Keyinput").value.toUpperCase();
         let keyToTranspose = document.getElementById("newKeyinput").value.toUpperCase();
         let newMelody = getKey(key, keyToTranspose, melody);
+        console.log(newMelody.length)
 
         let result = newMelody.join(" ");
         document.getElementById("output").innerText = result;
