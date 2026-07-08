@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melody Transposer</title>
+</head>
+<body>
+    <h1>Melody Transposer</h1>
+    <div class = "melody">
+        <h2>Melody:</h2>
+        <input type="text" id="Melodyinput" name="Melodyinput"><br><br>
+    </div>
+    <div class = "key">
+        <h2>Key:</h2>
+        <input type="text" id="Keyinput" name="Keyinput"><br><br>
+    </div>
+    <div class = "newKey">
+        <h2>New Key:</h2>
+        <input type="text" id="newKeyinput" name="newKeyinput"><br><br>
+    </div>
+    <div class = "newMelody">
+        <button onclick ="getInput()">Transpose</button>
+        <p id="output">Text Will Appear Here</p>
+    </div>
+<script>
+    const keys = ["C", "C#","D", "Eb","E", "F", "F#", "G", "G#", "A", "Bb", "B"];
+
+    function getKey(key, keyToTranspose, melody)
+    {
+        let newMelody = [];
+        let currentKeyidx;
+        let keyTransposeidx
+        for (let i = 0; i < keys.length; i++)
+        {
+            if (keys[i] == key)
+            {
+                currentKeyidx = i;
+            }
+            if (keys[i] == keyToTranspose)
+            {
+            
+                keyTransposeidx = i;
+            }
+            let raw_half_steps = keyTransposeidx - currentKeyidx;
+            let half_steps = (keys.length + raw_half_steps) % keys.length
+            for(let j = 0; j < melody.length; j++)
+            {
+                newMelody.push(Transpose(melody[j], half_steps));
+            
+            }
+        }
+        return newMelody;
+    }
+
+    function Transpose (note, hsteps)
+    {
+        let newIndex;
+        for (let i = 0; i < keys.length; i++)
+        {
+            if (keys[i] == note)
+            {
+                newIndex = [i + hsteps] % keys.length;
+            }
+        }
+        return keys[newIndex];
+    }
+
+    function getInput()
+    {
+        let Melodyinput = document.getElementById("Melodyinput").value.toUpperCase();
+        let melody = Melodyinput.split(" ");
+        let key = document.getElementById("Keyinput").value.toUpperCase();
+        let keyToTranspose = document.getElementById("newKeyinput").value.toUpperCase();
+        let newMelody = getKey(key, keyToTranspose, melody);
+
+        let result = newMelody.join(" ");
+        document.getElementById("output").innerText = result;
+    }
+</script>
+</body>
+</html>
