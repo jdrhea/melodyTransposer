@@ -4,33 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Melody Transposer</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Melody Transposer</h1>
     <div class = "melody">
-        <h2>Melody:</h2>
+        <h2>Melody</h2>
         <input type="text" id="Melodyinput" name="Melodyinput"><br><br>
     </div>
     <div class = "key">
-        <h2>Key:</h2>
+        <h2>Key</h2>
         <input type="text" id="Keyinput" name="Keyinput"><br><br>
     </div>
+        <label for="type">Type:</label>
+        <select id="type" onchange="getInput()">
+            <option value="Major">Major</option>
+            <option value="Minor">Minor</option>
+        </select>
+        <br><br>
     <div class = "newKey">
-        <h2>New Key:</h2>
+        <h2>New Key</h2>
         <input type="text" id="newKeyinput" name="newKeyinput"><br><br>
     </div>
+        <label for="newtype">Type:</label>
+        <select id="newtype" onchange="getInput()">
+            <option value="Major">Major</option>
+            <option value="Minor">Minor</option>
+        </select>
+        <br><br>
     <div class = "newMelody">
         <button onclick ="getInput()">Transpose</button>
         <p id="output">Text Will Appear Here</p>
     </div>
+
+        
 <script>
     const keys = ["C", "C#","D", "E♭","E", "F", "F#", "G", "G#", "A", "B♭", "B"];
+    const minorIndicies = [0,2,3,5,7,8,10]
+    const majorIndicies = [0,2,4,5,7,9,11]
 
-    function getKey(key, keyToTranspose, melody)
+    function getKey(key, keyToTranspose, melody, oldType, newType)
     {
         let newMelody = [];
         let currentKeyidx;
-        let keyTransposeidx
+        let keyTransposeidx;
         for (let i = 0; i < keys.length; i++)
         {
             if (keys[i] == key)
@@ -45,25 +62,81 @@
         }
         let raw_half_steps = keyTransposeidx - currentKeyidx;
         let half_steps = (keys.length + raw_half_steps) % keys.length
-        for(let j = 0; j < melody.length; j++)
+        for(let i = 0; i < melody.length; i++)
         {
-            newMelody.push(Transpose(melody[j], half_steps));
+            newMelody.push(Transpose(melody[i], half_steps, oldType, newType, currentKeyidx));
             
         }
         return newMelody;
     }
 
-    function Transpose (note, hsteps)
+    function Transpose (note, hsteps, oldType, newType, currentKeyidx)
     {
-        let newIndex;
-        for (let i = 0; i < keys.length; i++)
+        let rawNewIndex;
+    
+        rawNewIndex = keys.indexOf(note);
+
+        let transposedIdx = (rawNewIndex + hsteps);
+
+        let direction;
+        if (oldType == "Major" && newType == "Minor")
         {
-            if (keys[i] == note)
+            direction = -1;
+        }
+        else if (oldType == "Minor" && newType == "Major")
+        {
+            direction = 1;
+        }
+        else if (oldType == newType)
+        {
+            direction = 0;
+        }
+        let newTypeidx = convertType(direction, hsteps, transposedIdx, rawNewIndex, currentKeyidx) % keys.length;
+        return keys[newTypeidx]
+        
+    }
+    function convertType (direction, hsteps, transposedIdx, rawNewIndex, currentKeyidx)
+    {
+        let newTypeList;
+        let oldTypeList;
+        let newIdx;
+        let scaleIdx = (rawNewIndex - currentKeyidx + 12) % 12;
+        if (direction == 1)
+        {
+            newTypeList = majorIndicies;
+            const hasIndexBool = newTypeList.includes(scaleIdx);
+
+            if (!hasIndexBool)
             {
-                newIndex = [i + hsteps] % keys.length;
+                newIdx = transposedIdx + direction;
+                return newIdx;
+            }
+            else
+            {
+                return transposedIdx;
+            }
+
+        }
+        else if (direction == 0)
+        {
+            return transposedIdx;
+        }
+        else if (direction == -1)
+        {
+            newTypeList = minorIndicies;
+            const hasIndexBool = newTypeList.includes(scaleIdx);
+
+            if (!hasIndexBool)
+            {
+                newIdx = transposedIdx + direction;
+                return newIdx;
+            }
+            else
+            {
+                return transposedIdx;
             }
         }
-        return keys[newIndex];
+        
     }
 
     function getInput()
@@ -72,8 +145,11 @@
         let melody = Melodyinput.split(" ");
         let key = document.getElementById("Keyinput").value.toUpperCase();
         let keyToTranspose = document.getElementById("newKeyinput").value.toUpperCase();
-        let newMelody = getKey(key, keyToTranspose, melody);
-        console.log(newMelody.length)
+
+        let outputOldType = document.getElementById("type").value;
+        let outputNewType = document.getElementById("newtype").value;
+        console.log(outputOldType, outputNewType)
+        let newMelody = getKey(key, keyToTranspose, melody, outputOldType, outputNewType);
 
         let result = newMelody.join(" ");
         document.getElementById("output").innerText = result;
