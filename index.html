@@ -10,6 +10,7 @@
     <h1>Melody Transposer</h1>
     <div class = "melody">
         <h2>Melody</h2>
+        <p>NOTE: MAKE SURE FORMAT IS AS FOLLOWS: NOTE[SPACE]NOTE[SPACE] ... etcetera</p>
         <input type="text" id="Melodyinput" name="Melodyinput"><br><br>
     </div>
     <div class = "key">
@@ -100,7 +101,7 @@
         let newTypeList;
         let oldTypeList;
         let newIdx;
-        let scaleIdx = (rawNewIndex - currentKeyidx + 12) % 12;
+        let scaleIdx = (rawNewIndex - currentKeyidx + keys.length) % keys.length;
         if (direction == 1)
         {
             newTypeList = majorIndicies;
